@@ -30,6 +30,22 @@ app.get('/api/users', (req, res) => {
         });
     },
 
+app.get('/api/users/:id', (req, res) => {
+        User.findOne({ _id: req.params.id })
+        // .populate('thoughts')
+        // .populate('friends')
+        .then((user) => {
+            if (!user) {
+            res.status(404).json({ message: 'No user found with this id!' });
+            return;
+            }
+            res.json(user);
+        })
+        .catch((err) => {
+            res.status(400).json(err);
+        });
+    }),
+
 app.put('/api/users/:id', (req, res) => {
         User.findOneAndUpdate(
         { _id: req.params.id },
@@ -37,9 +53,12 @@ app.put('/api/users/:id', (req, res) => {
             $set: {
             username: req.body.username,
             email: req.body.email,
-            thoughts: req.body.thoughts,
+            // thoughts: req.body.thoughts,
             friends: req.body.friends,
             },
+            $push: {
+                thoughts: req.body.newThought
+            }
         },
         {
             runValidators: true,
