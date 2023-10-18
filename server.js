@@ -72,6 +72,42 @@ app.delete('/api/users/:id', (req, res) => {
         });
     });
 
+app.post('/api/users/:userId/friends/:friendId', (req, res) => {
+        User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $push: { friends: req.params.friendId } },
+        { new: true }
+        )
+        .then((user) => {
+            if (!user) {
+            res.status(404).json({ message: 'No user found with this id!' });
+            return;
+            }
+            res.json(user);
+        })
+        .catch((err) => {
+            res.status(400).json(err);
+        });
+    });
+
+app.delete('/api/users/:userId/friends/:friendId', (req, res) => {
+        User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $pull: { friends: req.params.friendId } },
+        { new: true }
+        )
+        .then((user) => {
+            if (!user) {
+            res.status(404).json({ message: 'No user found with this id!' });
+            return;
+            }
+            res.json(user);
+        })
+        .catch((err) => {
+            res.status(400).json(err);
+        });
+    });
+
 app.post('/api/thoughts', (req, res) => {
         Thought.create(req.body)
         .then((thought) => {
@@ -81,6 +117,16 @@ app.post('/api/thoughts', (req, res) => {
             res.status(400).json(err);
         });
     });
+
+app.get('/api/thoughts', (req, res) => {
+        Thought.find({})
+        .then((thought) => {
+            res.json(thought);
+        })
+        .catch((err) => {
+            res.status(400).json(err);
+        });
+    }), 
 
 app.get('/api/thoughts/:id', (req, res) => {
         Thought.findOne({ _id: req.params.id })
