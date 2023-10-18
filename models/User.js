@@ -1,33 +1,34 @@
 const mongoose = require('mongoose');
+const {Schema} = mongoose;
 
 /* define a new schema */
 
-// const reactionSchema = new mongoose.Schema({
-//     reactionId: {
-//         type: thoughtSchema.Types.ObjectId,
-//         default: () => new Types.ObjectId()
-//     },
-//     reactionBody: {
-//         type: String,
-//         required: true,
-//         maxlength: 280,
-//     },
-//     username: {
-//         type: String,
-//         required: true,
-//     },
-//     createdAt: {
-//         type: Date,
-//         default: Date.now,
-//         get: createdAtVal => dateFormat(createdAtVal)
-//     }
-// },
-// {
-//     toJSON: {
-//         getters: true
-//     },
-//     id: false
-// });
+const reactionSchema = new mongoose.Schema({
+    reactionId: {
+        type: mongoose.Schema.Types.ObjectId,
+        default: () => new Types.ObjectId()
+    },
+    reactionBody: {
+        type: String,
+        required: true,
+        maxlength: 280,
+    },
+    username: {
+        type: String,
+        required: true,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        get: createdAtVal => dateFormat(createdAtVal)
+    }
+},
+{
+    toJSON: {
+        getters: true
+    },
+    id: false
+});
 
 
 const thoughtSchema = new mongoose.Schema({
@@ -47,12 +48,12 @@ const thoughtSchema = new mongoose.Schema({
         required: true,
        
     },
-    // reactions: [
-    //     {
-    //         type: reactionSchema.Types.ObjectId,
-    //         ref: 'Reaction'
-    //     }
-    // ]
+    reactions: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Reaction'
+        }
+    ]
 },
 {
     toJSON: {
@@ -82,13 +83,13 @@ const userSchema = new mongoose.Schema({
     },
     thoughts: [
         {
-            type: thoughtSchema.Types.ObjectId,
+            type: mongoose.Schema.Types.ObjectId,
             ref: 'Thought'
         }
     ],
     friends: [
         {
-            type: userSchema.Types.ObjectId,
+            type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
         }
     ]
@@ -110,8 +111,5 @@ const User = mongoose.model('User', userSchema);
 
 /*create an instance of model */
 
-userSchema.virtual('friendCount').get(function() {
-    return this.friends.length;
-});
 
 module.exports = User;
