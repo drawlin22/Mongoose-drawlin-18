@@ -1,0 +1,117 @@
+const mongoose = require('mongoose');
+
+/* define a new schema */
+
+// const reactionSchema = new mongoose.Schema({
+//     reactionId: {
+//         type: thoughtSchema.Types.ObjectId,
+//         default: () => new Types.ObjectId()
+//     },
+//     reactionBody: {
+//         type: String,
+//         required: true,
+//         maxlength: 280,
+//     },
+//     username: {
+//         type: String,
+//         required: true,
+//     },
+//     createdAt: {
+//         type: Date,
+//         default: Date.now,
+//         get: createdAtVal => dateFormat(createdAtVal)
+//     }
+// },
+// {
+//     toJSON: {
+//         getters: true
+//     },
+//     id: false
+// });
+
+
+const thoughtSchema = new mongoose.Schema({
+    thoughtText: {
+        type: String,
+        required: true,
+        minlength: 1,
+        maxlength: 280,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        get: createdAtVal => dateFormat(createdAtVal)
+    },
+    username: {
+        type: String,
+        required: true,
+       
+    },
+    // reactions: [
+    //     {
+    //         type: reactionSchema.Types.ObjectId,
+    //         ref: 'Reaction'
+    //     }
+    // ]
+},
+{
+    toJSON: {
+        virtuals: true,
+    },
+    id: false,
+
+});
+
+thoughtSchema.virtual('reactionCount').get(function() {
+    return this.reactions.length;
+});
+
+const userSchema = new mongoose.Schema({ 
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true
+
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        match: /.+\@.+\..+/,
+    },
+    thoughts: [
+        {
+            type: thoughtSchema.Types.ObjectId,
+            ref: 'Thought'
+        }
+    ],
+    friends: [
+        {
+            type: userSchema.Types.ObjectId,
+            ref: 'User'
+        }
+    ]
+},
+{
+    toJSON: {
+        virtuals: true,
+    },
+    id: false
+});
+
+userSchema.virtual('friendCount').get(function() {
+    return this.friends.length;
+});
+
+/*create a model */
+
+const User = mongoose.model('User', userSchema);
+
+/*create an instance of model */
+
+userSchema.virtual('friendCount').get(function() {
+    return this.friends.length;
+});
+
+module.exports = User;
