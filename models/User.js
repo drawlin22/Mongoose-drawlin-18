@@ -109,7 +109,9 @@ userSchema.virtual('friendCount').get(function() {
 
 const User = mongoose.model('User', userSchema);
 
+const Thought = mongoose.model('Thought', thoughtSchema);
+
 /*create an instance of model */
 
 
-module.exports = User;
+module.exports = User, Thought;

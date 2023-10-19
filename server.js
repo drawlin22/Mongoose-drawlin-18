@@ -56,9 +56,9 @@ app.put('/api/users/:id', (req, res) => {
             // thoughts: req.body.thoughts,
             friends: req.body.friends,
             },
-            $push: {
-                thoughts: req.body.newThought
-            }
+            // $push: {
+            //     thoughts: req.body.newThought
+            // }
         },
         {
             runValidators: true,
@@ -70,11 +70,22 @@ app.put('/api/users/:id', (req, res) => {
             res.status(404).json({ message: 'No user found with this id!' });
             return;
             }
+            Thought.create(req.body.newThought)
+            .then((thought) => {
+                user.thoughts.push(thought._id);
+                return user.save();
+            })
+
+            .then((user => {
             res.json(user);
         })
         .catch((err) => {
             res.status(400).json(err);
-        });
+        }));
+    })
+    .catch((err) => {
+            res.status(400).json(err);
+        })
     }));
 
 app.delete('/api/users/:id', (req, res) => {
@@ -130,7 +141,18 @@ app.delete('/api/users/:userId/friends/:friendId', (req, res) => {
 app.post('/api/thoughts', (req, res) => {
         Thought.create(req.body)
         .then((thought) => {
-            res.json(thought);
+            return User.findOneAndUpdate(
+                { _id: req.body.userId },
+                { $push: { thoughts: thought._id } },
+                { new: true }
+            );
+        })
+        .then((user) => {
+            if (!user) {
+            res.status(404).json({ message: 'No user found with this id!' });
+            return;
+            }
+            res.json(user);
         })
         .catch((err) => {
             res.status(400).json(err);
