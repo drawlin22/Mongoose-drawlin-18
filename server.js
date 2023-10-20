@@ -46,40 +46,24 @@ app.get('/api/users/:id', (req, res) => {
         });
     }),
 
-app.put('/api/users/:id', (req, res) => {
-        User.findOneAndUpdate(
-        { _id: req.params.id },
-        { $set:req.body},
-            // $push: {
-            //     thoughts: req.body.newThought
-            // }
-        {
-            runValidators: true,
-            new: true,
-        }
-        )
-        .then((user) => {
-            if (!user) {
+app.put('/api/users/:id', async (req, res) => {
+    try{
+        const user= await User.findOneAndUpdate(
+            { _id: req.params.id },
+            { $set: req.body },
+            { runValidators: true, new: true }
+        );
+        if (!user) {
             res.status(404).json({ message: 'No user found with this id!' });
             return;
-            }
-            Thought.create(req.body.newThought)
-            .then((thought) => {
-                user.thoughts.push(thought._id);
-                return user.save();
-            })
+        }
+        res.json(user);
+    } catch (err) {
+        res.status(400).json(err);
+    }
+    })),
 
-            .then((user => {
-            res.json(user);
-        })
-        .catch((err) => {
-            res.status(400).json(err);
-        }));
-    })
-    .catch((err) => {
-            res.status(400).json(err);
-        })
-    }));
+    
 
 app.delete('/api/users/:id', (req, res) => {
         User.findOneAndDelete({ _id: req.params.id })
