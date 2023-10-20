@@ -53,7 +53,7 @@ app.put('/api/users/:id', (req, res) => {
             $set: {
             username: req.body.username,
             email: req.body.email,
-            // thoughts: req.body.thoughts,
+            thoughts: req.body.thoughts,
             friends: req.body.friends,
             },
             // $push: {
