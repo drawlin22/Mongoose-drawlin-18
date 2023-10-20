@@ -18,7 +18,7 @@ The server is handled by the Mongoose package connecting to the MongoDB.
 To install clone the repository. Run Node command npm i to install dependencies. Run npm start to initiate the server. All routes can be utilized with Insomnia.
 
 
-URL of Walk through video:
+URL of Walk through video: https://drive.google.com/file/d/1PCgZQ3P6MmmnEJwP0rTjz0KNauwPqIi3/view
 
 # Usage
 
