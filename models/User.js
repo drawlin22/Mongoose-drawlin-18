@@ -114,4 +114,4 @@ const Thought = mongoose.model('Thought', thoughtSchema);
 /*create an instance of model */
 
 
-module.exports = User, Thought;
+module.exports = {User, Thought};

@@ -32,8 +32,8 @@ app.get('/api/users', (req, res) => {
 
 app.get('/api/users/:id', (req, res) => {
         User.findOne({ _id: req.params.id })
-        // .populate('thoughts')
-        // .populate('friends')
+        .populate('thoughts')
+        .populate('friends')
         .then((user) => {
             if (!user) {
             res.status(404).json({ message: 'No user found with this id!' });
@@ -139,6 +139,7 @@ app.delete('/api/users/:userId/friends/:friendId', (req, res) => {
     });
 
 app.post('/api/thoughts', (req, res) => {
+    console.log(req.body)
         Thought.create(req.body)
         .then((thought) => {
             return User.findOneAndUpdate(
