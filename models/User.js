@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
-const {Schema} = mongoose;
+const {Schema, model} = require('mongoose');
 
 /* define a new schema */
+
 
 const reactionSchema = new mongoose.Schema({
     reactionId: {
         type: mongoose.Schema.Types.ObjectId,
-        default: () => new Types.ObjectId()
+        default: () => new mongoose.Types.ObjectId()
     },
     reactionBody: {
         type: String,
@@ -111,7 +112,8 @@ const User = mongoose.model('User', userSchema);
 
 const Thought = mongoose.model('Thought', thoughtSchema);
 
+const Reaction = mongoose.model('Reaction', reactionSchema);
+
 /*create an instance of model */
 
-
-module.exports = {User, Thought};
+module.exports = {User, Thought, Reaction};

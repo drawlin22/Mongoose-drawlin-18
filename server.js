@@ -1,7 +1,7 @@
 const express = require('express');
 const db = require('./config/connection');
 // Require model
-const { User, Thought } = require('./models');
+const { User, Thought, Reaction } = require('./models');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -102,8 +102,8 @@ app.delete('/api/users/:id', (req, res) => {
         });
     });
 
-app.post('/api/users/:userId/friends/:friendId', (req, res) => {
-        User.findOneAndUpdate(
+app.post('/api/users/:userId/friends/:friendId', async (req, res) => {
+        await User.findOneAndUpdate(
         { _id: req.params.userId },
         { $push: { friends: req.params.friendId } },
         { new: true }
@@ -211,8 +211,71 @@ app.put('/api/thoughts/:id', (req, res) => {
         });
     });
 
+// app.post('/api/thoughts/:thoughtId/reactions', (req, res) => {
+//         Thought.findOneAndUpdate(
+//         { _id: req.params.thoughtId },
+//         { $push: { reactions: req.body } },
+//         { new: true }
+//         )
+//         .then((thought) => {
+//             if (!thought) {
+//             res.status(404).json({ message: 'No thought found with this id!' });
+//             return;
+//             }
+//             res.json(thought);
+//         })
+//         .catch((err) => {
+//             res.status(400).json(err);
+//         });
+//     }
+//     ),
+
+app.post('/api/thoughts/:thoughtId/reactions', (req, res) => {
+    Thought.findOne({ _id: req.params.thoughtId })
+    .then((thought) => {
+        if (!thought) {
+        res.status(404).json({ message: 'No thought found with this id!' });
+        return;
+        }
+        const newReaction = new Reaction(req.body);
+        return newReaction.save();
+    })
+    .then((newReaction) => {
+        return Thought.findOneAndUpdate(
+            { _id: req.params.thoughtId },
+            { $push: { reactions: newReaction._id } },
+            { new: true }
+        );
+    })
+    .then((updatedThought) => {
+        res.json(updatedThought);
+    })
+    .catch((err) => {
+        res.status(400).json(err);
+    });
+});
+
+
 app.delete('/api/thoughts/:id', (req, res) => {
         Thought.findOneAndDelete({ _id: req.params.id })
+        .then((thought) => {
+            if (!thought) {
+            res.status(404).json({ message: 'No thought found with this id!' });
+            return;
+            }
+            res.json(thought);
+        })
+        .catch((err) => {
+            res.status(400).json(err);
+        });
+    });
+
+app.delete('/api/thoughts/:thoughtId/reactions/:reactionId', (req, res) => {
+        Thought.findOneAndUpdate(
+        { _id: req.params.thoughtId },
+        { $pull: { reactions: req.params.reactionId } },
+        { new: true }
+        )
         .then((thought) => {
             if (!thought) {
             res.status(404).json({ message: 'No thought found with this id!' });
@@ -235,17 +298,3 @@ db.once('open', () => {
 
 
 
-
-// ## Acceptance Criteria
-
-// ```md
-// GIVEN a social network API
-// WHEN I enter the command to invoke the application
-// THEN my server is started and the Mongoose models are synced to the MongoDB database
-// WHEN I open API GET routes in Insomnia for users and thoughts
-// THEN the data for each of these routes is displayed in a formatted JSON
-// WHEN I test API POST, PUT, and DELETE routes in Insomnia
-// THEN I am able to successfully create, update, and delete users and thoughts in my database
-// WHEN I test API POST and DELETE routes in Insomnia
-// THEN I am able to successfully create and delete reactions to thoughts and add and remove friends to a user’s friend list
-// ```
