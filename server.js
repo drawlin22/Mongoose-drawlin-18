@@ -49,17 +49,10 @@ app.get('/api/users/:id', (req, res) => {
 app.put('/api/users/:id', (req, res) => {
         User.findOneAndUpdate(
         { _id: req.params.id },
-        {
-            $set: {
-            username: req.body.username,
-            email: req.body.email,
-            thoughts: req.body.thoughts,
-            friends: req.body.friends,
-            },
+        { $set:req.body},
             // $push: {
             //     thoughts: req.body.newThought
             // }
-        },
         {
             runValidators: true,
             new: true,
